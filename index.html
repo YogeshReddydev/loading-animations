@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101114">
+<title>Loading Animations | Yogesh Reddy</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0f11;--panel:#171a1e;--card:#1d2126;--line:#343a42;--muted:#aeb5bd;--white:#f5f6f7}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--white);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{width:min(1700px,calc(100% - 56px));margin:auto}
+header{padding:44px 0 26px}h1{font-size:clamp(40px,6vw,70px);line-height:1.02;letter-spacing:-.055em;margin:0 0 12px;font-weight:850}
+.intro{font-size:17px;color:#b8bec6;max-width:850px;margin:0 0 24px}
+.profile-card{padding:22px 24px;border:1px solid #3a4047;border-radius:17px;background:linear-gradient(120deg,#1b1f23,#15181b);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.profile-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.profile-kicker,.eyebrow{font-size:10px;letter-spacing:.17em;color:#d6d9dd;font-weight:850}.profile-top strong{font-size:22px}.handle{font-size:13px;color:#aeb5bd}
+.profile-card p{color:#b9c0c8;margin:7px 0 0;max-width:750px}.profile-links{display:flex;gap:9px;flex-wrap:wrap}
+.profile-links a{display:inline-flex;align-items:center;gap:7px;color:#f3f4f5;text-decoration:none;border:1px solid #454b52;border-radius:999px;padding:9px 13px;font-size:13px;font-weight:700;background:#22262b}
+.profile-links a:hover{background:#30353b;border-color:#858b92}
+.profile-links svg{width:17px;height:17px;display:block}
+.section-head{margin:43px 0 17px}.section-head .eyebrow{margin-bottom:8px}.section-head h2{font-size:clamp(27px,4vw,42px);letter-spacing:-.04em;line-height:1.1;margin:0 0 8px}.section-head p{margin:0;color:#adb5bd}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 17px}
+.controls input,.controls select{background:#20252b;color:#f4f5f6;border:1px solid #414952;border-radius:10px;padding:12px 14px;font:inherit}
+.controls input{flex:1;min-width:230px}.controls input:focus,.controls select:focus{outline:2px solid #b9bec4;outline-offset:1px}
+.count{color:#b6bdc5;font-size:13px;align-self:center}
+.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-bottom:45px}
+.card{min-width:0;padding:13px;border:1px solid #343b43;border-radius:16px;background:linear-gradient(145deg,#22262b,#191c20);display:flex;flex-direction:column;transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-3px);border-color:#8b9299;box-shadow:0 14px 34px #0007}
+.preview{height:220px;background:#f3f3ef;border-radius:10px;margin-bottom:13px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;color:#000}
+.preview svg{width:155px;height:155px;overflow:visible}
+.preview .legacy{transform:scale(1.28);display:flex;align-items:center;justify-content:center}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.number{font-size:12px;font-weight:850;color:#f2f3f4;font-variant-numeric:tabular-nums}
+.category{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#aeb5bd;text-align:right}
+.card h3{font-size:20px;line-height:1.2;margin:0 0 7px;letter-spacing:-.02em}
+.desc{font-size:13px;line-height:1.45;color:#b8bec6;margin:0 0 14px;min-height:56px}
+.view{align-self:flex-start;margin-top:auto;border:1px solid #d5d9dd;border-radius:8px;padding:9px 14px;background:#f1f2f3;color:#101114;font-weight:750;font-size:13px;cursor:pointer}
+.view:hover{background:#fff;transform:translateY(-1px)}
+footer{border-top:1px solid #30363d;padding:23px 0 35px;color:#aab1b9;font-size:12px;display:flex;justify-content:space-between;gap:12px}
+.modal{position:fixed;inset:0;background:#000c;z-index:20;display:grid;place-items:center;padding:18px}.modal[hidden]{display:none}
+.dialog{width:min(760px,100%);max-height:92vh;overflow:auto;background:#191d21;border:1px solid #515861;border-radius:18px;padding:26px;position:relative;box-shadow:0 25px 90px #000b}
+.dialog h2{font-size:27px;margin:8px 45px 5px 0}.dialog p{color:#b7bec6}
+.dialog textarea{display:block;width:100%;height:340px;resize:vertical;background:#0d1013;color:#f3f4f5;border:1px solid #424951;border-radius:10px;padding:14px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}
+.copy,.close,.x{border:1px solid #565e67;border-radius:9px;padding:10px 15px;margin:12px 8px 0 0;font-weight:750;cursor:pointer}
+.copy{background:#f1f2f3;color:#111}.close,.x{background:#292e34;color:#f4f5f6}.x{position:absolute;right:15px;top:14px;margin:0;padding:5px 11px;font-size:20px}
+.status{min-height:20px;color:#c3c9d0;font-size:13px;margin-top:8px}
+@media(max-width:1200px){.gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:820px){main{width:calc(100% - 32px)}.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.preview{height:195px}}
+@media(max-width:560px){main{width:calc(100% - 22px)}header{padding-top:30px}.gallery{grid-template-columns:1fr}.preview{height:220px}.profile-card{padding:17px}.desc{min-height:0}footer{flex-direction:column}}
+/* First 20: original loader CSS, with the animation artwork normalized to black. */
+.dual{width:38px;height:38px;border:4px solid transparent;border-top-color:#000;border-bottom-color:#000;border-radius:50%;animation:spin 1s linear infinite}.dual:after{content:"";display:block;width:20px;height:20px;margin:5px;border:3px solid transparent;border-left-color:#000;border-right-color:#000;border-radius:50%;animation:spin .7s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wave{display:flex;align-items:center;gap:7px}.wave i{width:10px;height:10px;border-radius:50%;background:#000;animation:wave .8s ease-in-out infinite}.wave i:nth-child(2){animation-delay:.12s}.wave i:nth-child(3){animation-delay:.24s}.wave i:nth-child(4){animation-delay:.36s}.wave i:nth-child(5){animation-delay:.48s}@keyframes wave{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-17px)}}
+.hourglass{width:32px;height:42px;position:relative;animation:flip 2s ease-in-out infinite}.hourglass:before,.hourglass:after{content:"";position:absolute;left:2px;width:28px;height:18px;border:3px solid #000}.hourglass:before{top:1px;border-radius:3px 3px 13px 13px;border-top:0}.hourglass:after{bottom:1px;border-radius:13px 13px 3px 3px;border-bottom:0}@keyframes flip{50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+.ring{width:40px;height:40px;border-radius:50%;background:conic-gradient(#000 0 72%,#d0d0ca 72%);display:grid;place-items:center;animation:spin 1.2s linear infinite}.ring:after{content:"";width:27px;height:27px;border-radius:50%;background:#f3f3ef}
+.stripes{width:100px;height:14px;border:2px solid #000;border-radius:8px;background:repeating-linear-gradient(135deg,#000 0 8px,#777 8px 12px,#f3f3ef 12px 17px);background-size:34px 14px;animation:stripes .7s linear infinite}@keyframes stripes{to{background-position:34px 0}}
+.heart{font-size:38px;color:#000;animation:beat .8s ease-in-out infinite}@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.3)}30%{transform:scale(1)}45%{transform:scale(1.18)}}
+.grid{display:grid;grid-template-columns:repeat(3,12px);gap:4px}.grid i{width:12px;height:12px;background:#000;animation:grid .9s ease-in-out infinite}.grid i:nth-child(2),.grid i:nth-child(4){animation-delay:.12s}.grid i:nth-child(3),.grid i:nth-child(5),.grid i:nth-child(7){animation-delay:.24s}.grid i:nth-child(6),.grid i:nth-child(8){animation-delay:.36s}@keyframes grid{50%{opacity:.2;transform:scale(.55)}}
+.cradle{display:flex;align-items:flex-start;height:43px}.cradle i{width:12px;height:12px;border-radius:50%;background:#000;position:relative;margin:0 1px;transform-origin:50% -24px}.cradle i:before{content:"";position:absolute;width:1px;height:24px;background:#000;left:6px;top:-24px}.cradle i:first-child{animation:cradleL 1s ease-in-out infinite}.cradle i:last-child{animation:cradleR 1s ease-in-out infinite}@keyframes cradleL{0%,50%,100%{transform:rotate(0)}25%{transform:rotate(35deg)}}@keyframes cradleR{0%,50%,100%{transform:rotate(0)}75%{transform:rotate(-35deg)}}
+.clock{width:40px;height:40px;border:3px solid #000;border-radius:50%;position:relative}.clock:before{content:"";position:absolute;width:2px;height:12px;background:#000;left:16px;top:5px;transform-origin:bottom;animation:hand 2s linear infinite}.clock:after{content:"";position:absolute;width:10px;height:2px;background:#000;left:17px;top:18px;transform-origin:left;animation:hand 12s linear infinite}@keyframes hand{to{transform:rotate(360deg)}}
+.twins{width:42px;height:42px;position:relative}.twins i{position:absolute;width:24px;height:24px;border:3px solid #000;animation:twin 1.4s ease-in-out infinite}.twins i:nth-child(2){animation-delay:.7s}@keyframes twin{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(18px,18px) rotate(90deg)}}
+.blocks{display:flex;gap:3px;align-items:end;height:36px}.blocks i{width:12px;height:12px;background:#000;animation:stack .9s ease-in-out infinite}.blocks i:nth-child(2){animation-delay:.15s}.blocks i:nth-child(3){animation-delay:.3s}.blocks i:nth-child(4){animation-delay:.45s}@keyframes stack{50%{height:34px}}
+.wifi{width:52px;height:42px;position:relative;overflow:hidden}.wifi i{position:absolute;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#000;border-radius:50%}.wifi i:nth-child(1){width:50px;height:50px;top:0}.wifi i:nth-child(2){width:34px;height:34px;top:9px}.wifi i:nth-child(3){width:18px;height:18px;top:18px}.wifi:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#000;bottom:0;left:22px}
+.download{font-size:34px;color:#000;position:relative;animation:down 1s ease-in-out infinite}@keyframes down{0%,100%{transform:translateY(-7px);opacity:.5}60%{transform:translateY(6px);opacity:1}}
+.snake{width:48px;height:36px;display:grid;grid-template-columns:repeat(4,8px);grid-template-rows:repeat(3,8px);gap:3px}.snake i{background:#000;border-radius:2px;animation:snake .9s linear infinite}.snake i:nth-child(2){animation-delay:.1s}.snake i:nth-child(3){animation-delay:.2s}.snake i:nth-child(4){animation-delay:.3s}.snake i:nth-child(5){animation-delay:.4s}.snake i:nth-child(6){animation-delay:.5s}.snake i:nth-child(7){animation-delay:.6s}.snake i:nth-child(8){animation-delay:.7s}@keyframes snake{50%{opacity:.35;transform:scale(.65)}}
+.lens{width:30px;height:30px;border:4px solid #000;border-radius:50%;position:relative;animation:search 1.5s ease-in-out infinite}.lens:after{content:"";position:absolute;width:15px;height:4px;background:#000;right:-12px;bottom:-6px;transform:rotate(45deg);border-radius:3px}@keyframes search{50%{transform:scale(.8) rotate(45deg)}}
+.triangle{width:0;height:0;border-left:19px solid transparent;border-right:19px solid transparent;border-bottom:34px solid #000;position:relative;animation:tri 1.5s linear infinite}.triangle:after{content:"";position:absolute;left:-14px;top:8px;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:25px solid #f3f3ef}@keyframes tri{to{transform:rotate(360deg)}}
+.ellipsis{font-weight:700;font-size:18px;color:#000}.ellipsis:after{content:"";display:inline-block;width:18px;animation:dots 1.2s steps(4,end) infinite}@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%,100%{content:"..."}}
+.countdown{font-size:32px;font-weight:800;color:#000}.countdown:after{content:"3";animation:count 4s steps(1,end) infinite}@keyframes count{0%,24%{content:"3"}25%,49%{content:"2"}50%,74%{content:"1"}75%,100%{content:"0"}}
+.cube-wrap{perspective:120px}.cube{width:30px;height:30px;position:relative;transform-style:preserve-3d;animation:cube 2.2s linear infinite}.cube i{position:absolute;inset:0;border:2px solid #000;background:#0001}.cube i:nth-child(1){transform:translateZ(15px)}.cube i:nth-child(2){transform:rotateY(90deg) translateZ(15px)}.cube i:nth-child(3){transform:rotateX(90deg) translateZ(15px)}@keyframes cube{to{transform:rotateX(360deg) rotateY(360deg)}}
+.steps{display:flex;align-items:center}.steps i{width:17px;height:17px;border:3px solid #000;border-radius:50%;background:#f3f3ef;position:relative;z-index:1}.steps i:not(:last-child){margin-right:25px}.steps i:not(:last-child):after{content:"";position:absolute;width:28px;height:3px;background:#000;left:14px;top:4px;z-index:-1}.steps i:nth-child(1),.steps i:nth-child(2){animation:steps .8s ease-in-out infinite alternate}.steps i:nth-child(2){animation-delay:.4s}@keyframes steps{to{background:#000;transform:scale(1.15)}}
+/* Distinct, monochrome SVG motion treatments for animations 21–50. */
+.motion-svg{overflow:visible}.motion-svg .move{transform-box:fill-box;transform-origin:center;animation:mot-spin 2s linear infinite}.motion-svg .pulse{transform-box:fill-box;transform-origin:center;animation:mot-pulse 1.2s ease-in-out infinite}.motion-svg .travel{animation:mot-travel 1.6s ease-in-out infinite}.motion-svg .dash{stroke-dasharray:12 8;animation:mot-dash 1.4s linear infinite}.motion-svg .wavepath{animation:mot-wave 2s ease-in-out infinite}.motion-svg .blink{animation:mot-blink 1s ease-in-out infinite}.motion-svg .orbit{transform-box:fill-box;transform-origin:center;animation:mot-spin 2.8s linear infinite}.motion-svg .flip{transform-box:fill-box;transform-origin:center;animation:mot-flip 1.8s ease-in-out infinite}
+@keyframes mot-spin{to{transform:rotate(360deg)}}@keyframes mot-pulse{0%,100%{transform:scale(.78);opacity:.65}50%{transform:scale(1.12);opacity:1}}
+@keyframes mot-travel{0%,100%{transform:translateY(8px);opacity:.35}50%{transform:translateY(-8px);opacity:1}}
+@keyframes mot-dash{to{stroke-dashoffset:-40}}@keyframes mot-wave{0%,100%{transform:translateY(5px)}50%{transform:translateY(-7px)}}
+@keyframes mot-blink{0%,100%{opacity:.25}50%{opacity:1}}@keyframes mot-flip{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+@media(prefers-reduced-motion:reduce){.preview *{animation-duration:5s!important;animation-iteration-count:1!important}}
+
+/* Final refinement: UI typography may use restrained colour; animation artwork remains black. */
+:root{--ui-accent:#9cc7ff;--ui-accent-2:#c6b5ff;--ui-green:#a8d8bd}
+h1{background:linear-gradient(100deg,#fff 8%,#c7d8f4 52%,#c9baf4 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.section-head .eyebrow,.eyebrow{color:var(--ui-accent)}
+.profile-kicker{color:var(--ui-green)}
+.profile-top strong{color:#fff}
+.handle{color:#b9c8e8}
+.section-head h2{color:#f6f7fb}
+.card h3{color:#f5f6ff}
+.category{color:#b9c8e8}
+.number{color:#c5b8f3}
+.count{color:#b9c8e8}
+.view{background:#e8eefb;border-color:#c8d7f2;color:#101114}
+.view:hover{background:#fff}
+.profile-links a:hover{border-color:#a9c7f0}
+.card:hover{border-color:#8798b7}
+.preview .count{width:56px;height:56px;position:relative;display:grid;place-items:center;font-size:34px;font-weight:850;line-height:1;color:#000;background:transparent}
+.preview .count:after{content:none}
+.preview .count span{position:absolute;inset:0;display:grid;place-items:center;opacity:0;animation:countdownDigit 4s linear infinite}
+.preview .count span:nth-child(1){animation-delay:0s}
+.preview .count span:nth-child(2){animation-delay:1s}
+.preview .count span:nth-child(3){animation-delay:2s}
+.preview .count span:nth-child(4){animation-delay:3s}
+@keyframes countdownDigit{0%,23.9%{opacity:1}25%,100%{opacity:0}}
+/* Wi-Fi arcs illuminate in sequence; the arcs and dot stay solid black. */
+.wifi{overflow:visible}
+.wifi i{animation:wifiSignal 1.35s ease-in-out infinite;transform-origin:50% 100%}
+.wifi i:nth-child(1){animation-delay:0s}
+.wifi i:nth-child(2){animation-delay:.18s}
+.wifi i:nth-child(3){animation-delay:.36s}
+.wifi:after{animation:wifiDot 1.35s ease-in-out infinite}
+@keyframes wifiSignal{0%,100%{opacity:.22;transform:translateX(-50%) scale(.94)}45%,70%{opacity:1;transform:translateX(-50%) scale(1)}}
+@keyframes wifiDot{0%,100%{transform:scale(.75)}45%,70%{transform:scale(1.25)}}
+
+
+/* White, black and maroon page palette. Animation artwork remains black. */
+:root{--sector-white:#f7f4f2;--sector-black:#090909;--sector-maroon:#800020}
+header h1{background:linear-gradient(100deg,#ffffff,#d9c4ca,var(--sector-maroon));-webkit-background-clip:text;background-clip:text;color:transparent}
+.profile-card{border-color:rgba(128,0,32,.62);background:linear-gradient(115deg,rgba(128,0,32,.24),rgba(255,255,255,.045)),#151313}
+.profile-kicker{color:#d9aab7}
+.section-head .eyebrow,.eyebrow{color:#d9aab7}
+.card{border-color:rgba(255,255,255,.16)}
+.card:nth-child(3n+1){box-shadow:inset 0 2px 0 rgba(255,255,255,.75)}
+.card:nth-child(3n+2){box-shadow:inset 0 2px 0 rgba(128,0,32,.95)}
+.card:nth-child(3n){box-shadow:inset 0 2px 0 rgba(128,0,32,.48)}
+.number{color:#e0cbd0}
+.category{color:#d9aab7}
+.view{border-color:rgba(128,0,32,.75);background:linear-gradient(110deg,rgba(255,255,255,.10),rgba(128,0,32,.34));color:#fff}
+.view:hover{border-color:#d9aab7;background:rgba(128,0,32,.42)}
+.profile-links a:hover{border-color:#d9aab7}
+
+
+/* Final visual polish: refined depth, spacing, and consistent maroon accents. */
+:root{--bg:#090909;--panel:#151112;--card:#191516;--line:#49343a;--muted:#c9c1c3;--white:#fbf8f8}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(128,0,32,.22),transparent 34%),radial-gradient(ellipse at 92% 18%,rgba(128,0,32,.13),transparent 30%),#090909}
+main{width:min(1600px,calc(100% - 64px))}
+header{padding:56px 0 34px}
+header h1{letter-spacing:-.065em;text-shadow:0 8px 34px rgba(128,0,32,.18)}
+.intro{color:#d0c7ca;max-width:780px;line-height:1.75}
+.profile-card{padding:26px 28px;border-radius:22px;box-shadow:0 18px 50px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06)}
+.profile-links a{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.045);border-radius:999px;padding:9px 13px;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.profile-links a:hover{transform:translateY(-2px);background:rgba(128,0,32,.22)}
+.section-head{margin:38px 0 18px}
+.card{border-radius:20px;background:linear-gradient(155deg,rgba(255,255,255,.035),transparent 42%),#191516;border:1px solid rgba(255,255,255,.11);box-shadow:0 12px 30px rgba(0,0,0,.22);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.card:hover{transform:translateY(-4px);border-color:rgba(128,0,32,.8);box-shadow:0 18px 38px rgba(0,0,0,.34),0 0 0 1px rgba(128,0,32,.12)}
+.preview{border-radius:15px;background:linear-gradient(145deg,#f7f4f4,#e8e0e2);box-shadow:inset 0 1px 0 rgba(255,255,255,.85)}
+.view,.copy,.close{border-radius:999px;font-weight:750;transition:transform .18s ease,background .18s ease}
+.view:hover,.copy:hover,.close:hover{transform:translateY(-1px)}
+.modal .dialog{border:1px solid rgba(128,0,32,.55);box-shadow:0 28px 90px rgba(0,0,0,.55)}
+@media(max-width:700px){main{width:min(100% - 32px,1600px)}header{padding-top:38px}.profile-card{padding:20px}}
+@media(prefers-reduced-motion:reduce){.card,.profile-links a,.view,.copy,.close{transition:none!important}}
+
+
+/* Reference palette update: charcoal, off-white and electric lime.
+   Layout and component arrangement are intentionally unchanged. */
+:root{
+ --bg:#101114;--panel:#191c21;--card:#1a1d22;--line:#30343b;
+ --muted:#aeb4bd;--white:#f5f6f7;
+ --accent-lime:#c8f000;--preview-paper:#f3f3ef;
+}
+body{
+ background:radial-gradient(ellipse at 12% 0%,rgba(200,240,0,.045),transparent 32%),#101114;
+ color:#f5f6f7;
+}
+header h1{
+ background:none;-webkit-text-fill-color:#f5f6f7;color:#f5f6f7;text-shadow:none;
+}
+.intro,.profile-card p{color:#b9bec6}
+.profile-card{
+ border-color:#343941;
+ background:linear-gradient(120deg,#202329,#17191e);
+ box-shadow:0 18px 50px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.profile-kicker,.section-head .eyebrow,.eyebrow{color:var(--accent-lime)}
+.handle{color:#b9bec6}
+.profile-links a{
+ color:#f5f6f7;background:#22262c;border-color:#41464f;
+}
+.profile-links a:hover{border-color:var(--accent-lime);background:#292e32}
+.card{
+ background:#1a1d22;border-color:#30343b;
+}
+.card:nth-child(3n+1),.card:nth-child(3n+2),.card:nth-child(3n){
+ box-shadow:inset 0 2px 0 rgba(200,240,0,.12);
+}
+.card:hover{
+ border-color:rgba(200,240,0,.55);
+ box-shadow:0 18px 38px rgba(0,0,0,.34),0 0 0 1px rgba(200,240,0,.08);
+}
+.number{color:var(--accent-lime)}
+.category{color:#c5d98a}
+.preview{
+ background:var(--preview-paper);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+/* Keep all loader artwork monochrome black against the light preview tile. */
+.preview,.preview *{color:#080808}
+.preview *{border-color:#080808}
+.preview .count span{color:#080808}
+.view,.copy,.close{
+ color:#101114;border-color:var(--accent-lime);
+ background:var(--accent-lime);
+}
+.view:hover,.copy:hover,.close:hover{
+ color:#101114;background:#d8ff20;border-color:#d8ff20;
+}
+.modal .dialog{border-color:#555c35}
+
+</style>
+</head>
+<body><main>
+<header>
+ <h1>Loading Animations</h1>
+ <p class="intro">A curated collection of animated loaders for developers and creators. Explore each live preview, then open its dedicated build prompt and copy it into your preferred AI coding agent.</p>
+ <section class="profile-card" aria-label="Creator profile">
+  <div>
+   <div class="profile-top"><span class="profile-kicker">CREATED BY</span><strong>Yogesh Reddy</strong><span class="handle">@YogeshReddydev</span></div>
+   <p>AI enthusiast, cybersecurity learner and technology community builder exploring artificial intelligence, quantum computing and emerging technologies. Google Student Ambassador and community event organiser. Connect with me or explore my work.</p>
+  </div>
+  <nav class="profile-links" aria-label="Social profiles">
+   <a href="https://www.linkedin.com/in/yogeshreddydev/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0A66C2" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.44c.98 0 1.79-.77 1.79-1.72V1.72C24 .77 23.19 0 22.22 0Z"/></svg>LinkedIn</a>
+   <a href="https://github.com/YogeshReddydev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.76 2.2 3.2 1.67.1-.72.4-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.29-.5-1.43.11-2.98 0 0 .94-.3 3.06 1.15a10.6 10.6 0 0 1 5.57 0c2.12-1.45 3.06-1.15 3.06-1.15.61 1.55.23 2.69.11 2.98.72.78 1.15 1.78 1.15 3 0 4.29-2.61 5.23-5.1 5.51.4.35.76 1.03.76 2.08V22c0 .29.2.63.77.52A11.1 11.1 0 0 0 12 .9Z"/></svg>GitHub</a>
+   <a href="https://g.dev/yogeshreddy" target="_blank" rel="noopener noreferrer" aria-label="Google Developers">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M7.5 14.2A19.5 19.5 0 0 1 41 10l-6.4 6.4a10.5 10.5 0 0 0-17.6 3.8l-9.5-6Z"/><path fill="#34A853" d="M7.5 14.2 17 20.2a10.4 10.4 0 0 0 .1 7.7l-9.5 6A19.5 19.5 0 0 1 7.5 14.2Z"/><path fill="#FBBC04" d="m7.6 33.9 9.5-6a10.5 10.5 0 0 0 17.5 3.9l6.4 6.4a19.5 19.5 0 0 1-33.4-4.3Z"/><path fill="#EA4335" d="M34.6 31.8a10.5 10.5 0 0 0 2.7-6.9H24v-8h21v4c0 8.1-3.3 14.4-9 18.3l-6.4-7.4Z"/></svg>Google Developers</a>
+
+   <a href="https://youware.app/project/i785o3vo0d?enter_from=share" target="_blank" rel="noopener noreferrer" aria-label="Portfolio">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Zm-5 4v8h16v-8h-6v2h-4v-2H4Z"/></svg>Portfolio</a>
+   <a href="mailto:yampaatiyogeshpavan@gmail.com" aria-label="Email">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 5h20v14H2z"/><path fill="#fff" d="m3 6 9 7 9-7v2l-9 7-9-7z"/></svg>Email</a>
+  </nav>
+ </section>
+</header>
+<section class="section-head"><div class="eyebrow">EXPLORE THE COLLECTION</div><h2>Choose an animation</h2><p>All 50 animations are shown directly below. Watch the motion, choose a design, and open its prompt when you're ready to build.</p></section>
+<div class="controls"><input id="search" type="search" placeholder="Search by animation name or category…" aria-label="Search animations"><select id="category" aria-label="Filter by category"><option value="all">All categories</option></select><span class="count" id="count">50 animations</span></div>
+<section class="gallery" id="gallery" aria-live="polite"></section>
+<footer><span>Loading Animations</span><span>Created by Yogeshreddydev · Built for developers and creators</span></footer>
+</main>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog">
+<button class="x" id="x" aria-label="Close">×</button><div class="eyebrow">ANIMATION BUILD PROMPT</div><h2 id="modalTitle"></h2><p id="modalDesc"></p><textarea id="prompt" readonly></textarea><button class="copy" id="copy">Copy prompt</button><button class="close" id="close">Close</button><div class="status" id="status" aria-live="polite"></div>
+</div></div>
+<script>
+const animations=[{"id": 1, "name": "Dual Ring", "category": "Classic loaders", "description": "", "preview": "<div class=\"dual\"></div>", "previewClass": ""}, {"id": 2, "name": "Wave Dots", "category": "Classic loaders", "description": "", "preview": "<i></i><i></i><i></i><i></i><i></i>", "previewClass": "wave"}, {"id": 3, "name": "Hourglass", "category": "Classic loaders", "description": "", "preview": "<div class=\"hourglass\"></div>", "previewClass": ""}, {"id": 4, "name": "Progress Ring", "category": "Classic loaders", "description": "", "preview": "<div class=\"ring\"></div>", "previewClass": ""}, {"id": 5, "name": "Striped Bar", "category": "Classic loaders", "description": "", "preview": "<div class=\"stripes\"></div>", "previewClass": ""}, {"id": 6, "name": "Heartbeat", "category": "Classic loaders", "description": "", "preview": "<div class=\"heart\">♥</div>", "previewClass": ""}, {"id": 7, "name": "Square Grid", "category": "Classic loaders", "description": "", "preview": "<div class=\"grid\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 8, "name": "Newton Cradle", "category": "Classic loaders", "description": "", "preview": "<div class=\"cradle\"><i></i><i></i><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 9, "name": "Clock Spin", "category": "Classic loaders", "description": "", "preview": "<div class=\"clock\"></div>", "previewClass": ""}, {"id": 10, "name": "Twin Squares", "category": "Classic loaders", "description": "", "preview": "<div class=\"twins\"><i></i><i></i></div>", "previewClass": ""}, {"id": 11, "name": "Stacking Blocks", "category": "Classic loaders", "description": "", "preview": "<div class=\"blocks\"><i></i><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 12, "name": "Wi-Fi Signal", "category": "Classic loaders", "description": "", "preview": "<div class=\"wifi\"><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 13, "name": "Download Arrow", "category": "Classic loaders", "description": "", "preview": "<div class=\"download\">↓</div>", "previewClass": ""}, {"id": 14, "name": "Snake Path", "category": "Classic loaders", "description": "", "preview": "<div class=\"snake\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 15, "name": "Search Lens", "category": "Classic loaders", "description": "", "preview": "<div class=\"lens\"></div>", "previewClass": ""}, {"id": 16, "name": "Triangle Trace", "category": "Classic loaders", "description": "", "preview": "<div class=\"triangle\"></div>", "previewClass": ""}, {"id": 17, "name": "Ellipsis Text", "category": "Classic loaders", "description": "", "preview": "<div class=\"ellipsis\">Loading</div>", "previewClass": ""}, {"id": 18, "name": "Countdown", "category": "Classic loaders", "description": "", "preview": "<div class=\"count\"><span>3</span><span>2</span><span>1</span><span>0</span></div>", "previewClass": ""}, {"id": 19, "name": "3D Cube", "category": "Classic loaders", "description": "", "preview": "<div class=\"cube-wrap\"><div class=\"cube\"><i></i><i></i><i></i></div></div>", "previewClass": ""}, {"id": 20, "name": "Progress Steps", "category": "Classic loaders", "description": "", "preview": "<div class=\"steps\"><i></i><i></i><i></i><i></i></div>", "previewClass": ""}, {"id": 21, "name": "Orbiting Dots", "category": "Circular motion", "description": "Three black dots orbit a central point in a smooth repeating path."}, {"id": 22, "name": "Ripple Rings", "category": "Circular motion", "description": "Concentric black rings expand outward and fade in a continuous ripple."}, {"id": 23, "name": "Morphing Blob", "category": "Organic motion", "description": "A soft-edged black shape changes its silhouette with a slow fluid morph."}, {"id": 24, "name": "Radar Sweep", "category": "Data & technology", "description": "A rotating radar sweep scans a circular field with a moving black indicator."}, {"id": 25, "name": "Equalizer Bars", "category": "Audio & media", "description": "A row of black bars rises and falls at staggered heights like an audio equalizer."}, {"id": 26, "name": "Pulsing Core", "category": "Minimal motion", "description": "A central black core expands and contracts with a steady breathing rhythm."}, {"id": 27, "name": "Rotating Diamonds", "category": "Geometric motion", "description": "Four black diamonds rotate around a shared centre in a balanced orbit."}, {"id": 28, "name": "Folding Panels", "category": "Geometric motion", "description": "Four black panels fold inward and outward in a repeating sequence."}, {"id": 29, "name": "Liquid Wave", "category": "Fluid motion", "description": "A black wave travels horizontally with a smooth flowing surface."}, {"id": 30, "name": "Moving Dashes", "category": "Linear motion", "description": "Short black dashes travel along a horizontal track in a seamless loop."}, {"id": 31, "name": "Orbiting Satellites", "category": "Space & science", "description": "Small black satellites circle a central planet at different orbital speeds."}, {"id": 32, "name": "Planet Rotation", "category": "Space & science", "description": "A black planet rotates while a small moon revolves around it."}, {"id": 33, "name": "Molecule Assembly", "category": "Science & education", "description": "Black nodes connect and separate like a molecule assembling itself."}, {"id": 34, "name": "Atom Model", "category": "Science & education", "description": "Three orbital paths rotate around a central black nucleus."}, {"id": 35, "name": "Book Flip", "category": "Education", "description": "A pair of black book pages turn from one side to the other."}, {"id": 36, "name": "Pencil Draw", "category": "Education & creativity", "description": "A black stroke draws a simple line progressively, then resets."}, {"id": 37, "name": "Leaf Grow", "category": "Nature & agriculture", "description": "A black stem grows upward as two leaves unfold from it."}, {"id": 38, "name": "Seed Sprout", "category": "Nature & agriculture", "description": "A small black seed sprouts into a stem and two leaves."}, {"id": 39, "name": "Water Drop", "category": "Nature & agriculture", "description": "A black water droplet falls and creates a circular ripple on impact."}, {"id": 40, "name": "Crop Rows", "category": "Nature & agriculture", "description": "Black crop rows appear progressively from foreground to background."}, {"id": 41, "name": "Cart Bounce", "category": "E-commerce", "description": "A minimal black shopping cart rolls forward with a gentle bounce."}, {"id": 42, "name": "Package Unbox", "category": "E-commerce", "description": "A black parcel opens as its top flaps lift and settle."}, {"id": 43, "name": "Delivery Route", "category": "Logistics & travel", "description": "A black location marker moves along a curved route between two points."}, {"id": 44, "name": "Compass Spin", "category": "Travel & tourism", "description": "A black compass needle rotates and settles before repeating."}, {"id": 45, "name": "Airplane Takeoff", "category": "Travel & tourism", "description": "A black airplane silhouette rises diagonally in a smooth loop."}, {"id": 46, "name": "Medical Cross Pulse", "category": "Healthcare", "description": "A black medical cross gently pulses to indicate a health-related process."}, {"id": 47, "name": "Heart Monitor", "category": "Healthcare", "description": "A black ECG trace moves across a monitor with a repeating heartbeat."}, {"id": 48, "name": "Shield Scan", "category": "Security", "description": "A black shield is scanned by a moving line from top to bottom."}, {"id": 49, "name": "Lock Cycle", "category": "Security", "description": "A black padlock shackle opens and closes in a clear repeating sequence."}, {"id": 50, "name": "Network Nodes", "category": "Connectivity", "description": "Black network nodes illuminate in sequence as connections pulse outward."}];
+const search=document.getElementById('search'),category=document.getElementById('category'),gallery=document.getElementById('gallery');
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function svgPreview(x){
+ const n=x.id, common='fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
+ let shapes='';
+ const circle=(cx,cy,r,cl='pulse')=>`<circle class="${cl}" cx="${cx}" cy="${cy}" r="${r}" fill="#000"/>`;
+ const path=(d,cl='dash')=>`<path class="${cl}" d="${d}" ${common}/>`;
+ switch(n){
+ case 21: shapes=`<circle cx="60" cy="60" r="8" fill="#000"/><circle cx="60" cy="60" r="34" ${common}/><circle class="orbit" cx="60" cy="26" r="6" fill="#000"/>${circle(60,60,3)}`;break;
+ case 22: shapes=`<circle class="pulse" cx="60" cy="60" r="12" ${common}/><circle class="pulse" cx="60" cy="60" r="27" ${common}/><circle class="pulse" cx="60" cy="60" r="42" ${common}/>`;break;
+ case 23: shapes=`<path class="wavepath" d="M25 62 C22 28 53 24 63 42 C78 65 97 40 94 25 C116 66 91 99 61 91 C30 100 14 82 25 62Z" fill="#000"/>`;break;
+ case 24: shapes=`<circle cx="60" cy="60" r="39" ${common}/><path class="move" d="M60 60 L60 22 A38 38 0 0 1 91 38Z" fill="#000"/><circle cx="60" cy="60" r="4" fill="#000"/>`;break;
+ case 25: shapes=Array.from({length:7},(_,i)=>`<rect class="travel" style="animation-delay:${i*.12}s" x="${25+i*11}" y="${42+i%3*5}" width="7" height="${24+(i%3)*12}" rx="2" fill="#000"/>`).join('');break;
+ case 26: shapes=`${circle(60,60,24,'pulse')}<circle cx="60" cy="60" r="39" ${common}/>`;break;
+ case 27: shapes=Array.from({length:4},(_,i)=>`<rect class="orbit" style="animation-delay:${i*.15}s" x="53" y="19" width="14" height="14" transform="rotate(${i*90} 60 60)" fill="#000"/>`).join('');break;
+ case 28: shapes=`<g class="flip"><path d="M25 25H57V95H25Z M63 25H95V95H63Z" fill="#000"/></g>`;break;
+ case 29: shapes=`<path class="wavepath" d="M10 56 Q22 28 35 56 T60 56 T85 56 T110 56" ${common}/><path class="wavepath" style="animation-delay:.3s" d="M10 72 Q22 44 35 72 T60 72 T85 72 T110 72" ${common}/>`;break;
+ case 30: shapes=Array.from({length:5},(_,i)=>`<rect class="travel" style="animation-delay:${i*.14}s" x="${20+i*18}" y="55" width="11" height="5" rx="2" fill="#000"/>`).join('');break;
+ case 31: shapes=`<circle cx="60" cy="60" r="5" fill="#000"/>${[0,120,240].map(a=>`<g transform="rotate(${a} 60 60)"><ellipse cx="60" cy="60" rx="39" ry="17" ${common}/><circle class="travel" cx="99" cy="60" r="5" fill="#000"/></g>`).join('')}`;break;
+ case 32: shapes=`<circle cx="60" cy="60" r="24" ${common}/><circle class="orbit" cx="60" cy="60" r="24" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="12 6"/><circle cx="60" cy="60" r="5" fill="#000"/><circle class="travel" cx="91" cy="60" r="6" fill="#000"/>`;break;
+ case 33: shapes=`<g class="pulse">${[0,1,2,3].map(i=>`<circle cx="${35+i*18}" cy="${48+(i%2)*22}" r="7" fill="#000"/>`).join('')}${path('M35 48 L53 70 L71 48 L89 70','dash')}</g>`;break;
+ case 34: shapes=`<circle cx="60" cy="60" r="6" fill="#000"/>${[0,60,120].map(a=>`<ellipse class="orbit" transform="rotate(${a} 60 60)" cx="60" cy="60" rx="42" ry="17" ${common}/>`).join('')}`;break;
+ case 35: shapes=`<g class="flip"><path d="M60 25 Q35 20 22 30 V94 Q42 85 60 94Z M60 25 Q85 20 98 30 V94 Q78 85 60 94Z" fill="#000"/></g><path d="M60 26V94" stroke="#f3f3ef" stroke-width="2"/>`;break;
+ case 36: shapes=`<path class="dash" d="M22 82 L82 22" ${common}/><path class="travel" d="M75 22 L84 22 L84 31" ${common}/>`;break;
+ case 37: shapes=`<path d="M60 92 C60 92 28 58 37 42 C45 28 58 37 60 48 C66 32 86 31 91 48 C97 68 60 92 60 92Z" fill="#000" class="pulse"/><path d="M15 60H35L44 43L54 76L65 51L73 60H105" stroke="#f3f3ef" stroke-width="3" fill="none"/>`;break;
+ case 38: shapes=`<path d="M60 90 C20 65 39 35 60 25 C82 37 100 66 60 90Z" fill="#000"/><path class="travel" d="M60 75V42 M60 55L43 42 M60 55L78 39" stroke="#f3f3ef" stroke-width="4" fill="none" stroke-linecap="round"/>`;break;
+ case 39: shapes=`<path d="M60 23 C50 42 34 58 38 72 A22 22 0 0 0 82 72 C86 58 70 42 60 23Z" fill="#000" class="travel"/><path class="pulse" d="M28 92 Q60 82 92 92" ${common}/>`;break;
+ case 40: shapes=Array.from({length:4},(_,i)=>`<path class="blink" style="animation-delay:${i*.2}s" d="M${25+i*18} 90 V${45+(i%2)*9}" stroke="#000" stroke-width="8" stroke-linecap="round"/>`).join('');break;
+ case 41: shapes=`<path d="M20 65H35L48 80L78 40H100" ${common}/><g class="travel"><path d="M35 30H85V65H35Z" fill="#000"/><path d="M43 40H77V55H43Z" fill="#f3f3ef"/></g>`;break;
+ case 42: shapes=`<rect x="28" y="40" width="64" height="48" rx="5" ${common}/><g class="flip"><path d="M28 40L60 20L92 40" fill="#000" stroke="#000" stroke-width="4"/></g><path d="M60 58V76 M51 67L60 76L69 67" stroke="#f3f3ef" stroke-width="4" fill="none"/>`;break;
+ case 43: shapes=`<path d="M18 78 Q60 20 102 78" ${common}/><circle class="travel" cx="18" cy="78" r="6" fill="#000"/><path d="M91 66L102 78L88 83" ${common}/>`;break;
+ case 44: shapes=`<circle cx="60" cy="60" r="37" ${common}/><path class="move" d="M60 60L60 27L68 60Z" fill="#000"/><circle cx="60" cy="60" r="4" fill="#000"/>`;break;
+ case 45: shapes=`<g class="travel"><path d="M20 62L54 55L68 32L77 32L72 53L100 59L100 65L70 64L64 83L57 83L58 64L20 68Z" fill="#000"/></g>`;break;
+ case 46: shapes=`<path d="M60 22V98 M22 60H98" stroke="#000" stroke-width="17" stroke-linecap="round" class="pulse"/>`;break;
+ case 47: shapes=`<path class="dash" d="M12 62H28L39 42L50 81L62 29L73 69L84 52H108" stroke="#000" stroke-width="4" fill="none" stroke-linejoin="round"/>`;break;
+ case 48: shapes=`<path d="M60 18L94 31V57Q90 83 60 101Q30 83 26 57V31Z" ${common}/><path class="travel" d="M60 29V88" stroke="#000" stroke-width="4"/>`;break;
+ case 49: shapes=`<rect x="37" y="49" width="46" height="39" rx="5" ${common}/><path class="flip" d="M45 49V38A15 15 0 0 1 75 38V49" stroke="#000" stroke-width="6" fill="none"/>`;break;
+ case 50: shapes=`${[0,1,2,3,4].map(i=>`<circle class="blink" style="animation-delay:${i*.17}s" cx="${25+(i%3)*35}" cy="${35+Math.floor(i/3)*45}" r="7" fill="#000"/>`).join('')}<path class="dash" d="M25 35L60 35L95 35 M25 80L60 80L95 80 M60 35V80" ${common}/>`;break;
+ default: shapes=circle(60,60,20);
+ }
+ return `<svg class="motion-svg" viewBox="0 0 120 120" role="img" aria-label="${esc(x.name)} animated preview">${shapes}</svg>`;
+}
+function cardFor(x){
+ const card=document.createElement('article');card.className='card';
+ const preview=document.createElement('div');preview.className='preview';
+ if(x.preview){if(x.previewClass)preview.classList.add(x.previewClass);preview.innerHTML=x.preview;}
+ else preview.innerHTML=svgPreview(x);
+ const meta=document.createElement('div');meta.className='card-meta';
+ const num=document.createElement('span');num.className='number';num.textContent=String(x.id).padStart(2,'0');
+ const cat=document.createElement('span');cat.className='category';cat.textContent=x.category;
+ meta.append(num,cat);
+ const title=document.createElement('h3');title.textContent=x.name;
+ const desc=document.createElement('p');desc.className='desc';desc.textContent=x.description||descriptions[x.id-1]||'A distinctive loading animation with a continuous, seamless motion loop.';
+ const btn=document.createElement('button');btn.className='view';btn.type='button';btn.textContent='View prompt ↗';btn.addEventListener('click',()=>openPrompt(x,desc.textContent));
+ card.append(preview,meta,title,desc,btn);return card;
+}
+const descriptions={
+ 1:'Two concentric rings rotate in opposite directions with contrasting arc segments.',2:'Five dots bounce vertically in a staggered travelling wave.',3:'A glass timer flips while particles fall through its centre.',4:'A circular progress arc fills smoothly around a fixed centre.',5:'Diagonal stripes travel continuously inside a rounded progress track.',6:'A heart pulses rhythmically to indicate ongoing activity.',7:'A square grid animates in a staggered sequence.',8:'A Newton cradle swings its end balls in alternating motion.',9:'Clock hands rotate at different speeds.',10:'Two outlined squares move and rotate in a repeating pattern.',11:'Blocks rise in sequence to create a stacking effect.',12:'Wi-Fi arcs animate to suggest a searching wireless connection.',13:'A download arrow moves down and returns to its starting point.',14:'A sequence of segments travels along a snake-like path.',15:'A search lens moves and scales as if scanning.',16:'A triangular outline rotates continuously.',17:'A loading label cycles through an animated ellipsis.',18:'A numeric countdown cycles from three to zero.',19:'A wireframe cube rotates in three dimensions.',20:'Progress checkpoints activate one after another.'
+};
+function openPrompt(x,desc){
+ const prompt=`Build a production-ready "${x.name}" loading animation component.
+
+ANIMATION NAME: ${x.name}
+ANIMATION NUMBER: ${String(x.id).padStart(2,'0')}
+CATEGORY: ${x.category}
+VISUAL BEHAVIOUR: ${desc}
+
+IMPLEMENTATION REQUIREMENTS
+1. Inspect the existing project and use its current framework, language, component conventions and styling approach. If the project uses Flutter/Dart, implement a reusable Flutter widget; if it uses a web stack, implement a reusable web component.
+2. Recreate the named visual metaphor and motion accurately. Do not substitute a generic spinner. The animation must visibly match the name and description.
+3. Use pure black (#000000) for every animated shape. Do not add coloured accents, gradients, coloured shadows or multicolour effects. Use a clean neutral background and, where needed, a subtle light-grey inactive track.
+4. Make the preview and component responsive. Provide configurable size, speed and background while keeping the animated artwork black by default.
+5. Use smooth timing, easing and a seamless loop. Avoid flicker, unnecessary layout shifts and excessive CPU/GPU use.
+6. Include accessible loading/status semantics for web or suitable semantic labels for Flutter. Mark decorative parts appropriately.
+7. Respect reduced-motion preferences or platform accessibility settings with a calm static alternative.
+8. Keep code clean, reusable, scoped and production-ready. Do not modify unrelated project files.
+
+DELIVERABLE
+Implement the complete working animation in the current project, include all required code and styles, explain exactly how to integrate and use it, and verify it runs correctly on relevant screen sizes. Do not return pseudocode or only an explanation.`;
+ document.getElementById('modalTitle').textContent=`${String(x.id).padStart(2,'0')} · ${x.name}`;
+ document.getElementById('modalDesc').textContent=`${x.category} — ${desc}`;
+ document.getElementById('prompt').value=prompt;
+ document.getElementById('status').textContent='';
+ document.getElementById('modal').hidden=false;
+ document.getElementById('copy').focus();
+}
+function hide(){document.getElementById('modal').hidden=true}
+document.getElementById('x').addEventListener('click',hide);document.getElementById('close').addEventListener('click',hide);
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')hide()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});
+document.getElementById('copy').addEventListener('click',async()=>{const t=document.getElementById('prompt');try{await navigator.clipboard.writeText(t.value);document.getElementById('status').textContent='Prompt copied. Paste it into your coding agent.'}catch(e){t.select();document.execCommand('copy');document.getElementById('status').textContent='Prompt selected. Press Ctrl+C if needed.'}});
+function render(){
+ const q=search.value.trim().toLowerCase(),c=category.value;
+ const filtered=animations.filter(x=>(c==='all'||x.category===c)&&(`${x.name} ${x.category} ${x.description||''}`).toLowerCase().includes(q));
+ gallery.innerHTML='';filtered.forEach(x=>gallery.append(cardFor(x)));
+ document.getElementById('count').textContent=`Showing ${filtered.length} of ${animations.length} animations`;
+}
+[...new Set(animations.map(x=>x.category))].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;category.append(o)});
+search.addEventListener('input',render);category.addEventListener('change',render);render();
+</script></body></html>
